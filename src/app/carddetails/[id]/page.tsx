@@ -15,7 +15,7 @@ interface CardIdPageProps {
 
 const getinfo = async (): Promise<Workout[]> => {
     const res = await fetch(
-        "https://api.api-store.workers.dev/api/fitlog",
+        `${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/https://api.api-store.workers.dev/api/fitlog`,
         { cache: "no-store" }
     );
 
