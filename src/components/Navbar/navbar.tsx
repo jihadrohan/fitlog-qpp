@@ -17,8 +17,8 @@ const Navbar = () => {
     const saveFit = context?.saveFit || [];
 
     return (
-        <nav className="bg-[#0b0d10] sticky top-0 z-50">
-            <div className="max-w-7xl mx-auto px-4 container bg-[#0b0d10] border-b border-[#252830]">
+        <nav className="bg-[#0b0d10] sticky top-0 z-50 border-b border-[#252830]">
+            <div className="max-w-7xl mx-auto px-4 container bg-[#0b0d10]">
               <div className="navbar min-h-20">
                     <div className="navbar-start gap-2">
                         <div className="dropdown">
