@@ -15,7 +15,7 @@ interface CardIdPageProps {
 
 const getinfo = async (): Promise<Workout[]> => {
     const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/https://api.api-store.workers.dev/api/fitlog`,
+        `${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/api/fitlog`,
         { cache: "no-store" }
     );
 
@@ -130,31 +130,25 @@ return (
 
                     </div>
                     <div className="mt-8">
+    <h2 className="text-xl font-extrabold mb-5">
+        INSTRUCTIONS
+    </h2>
 
-                        <h2 className="text-xl font-extrabold mb-5">
-                            INSTRUCTIONS
-                        </h2>
+    <ol className="space-y-4">
+        {fit.instructions.map((instruction, index) => (
+            <li
+                key={index}
+                className="flex gap-4 text-gray-300 text-sm leading-relaxed"
+            >
+                <span className="text-lime-400 font-bold">
+                    {index + 1}.
+                </span>
 
-                        <ol className="space-y-4">
- 
-                            {fit.instructions.map((instruction: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<unknown>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined, index: React.Key | null | undefined) => (
-
-                                <li
-                                    key={index}
-                                    className="flex gap-4 text-gray-300 text-sm leading-relaxed"
-                                >
-
-                                    <span className="text-lime-400 font-bold">
-                                        {index + 1}.
-                                    </span>
-
-                                    <span>
-                                        {instruction}
-                                   </span>
-                                </li>
-                            ))}
-                        </ol>
-                    </div>
+                <span>{instruction}</span>
+            </li>
+        ))}
+    </ol>
+</div>
                     <div className="flex flex-wrap gap-4 mt-10">
                         <Addbutton fit = {fit}></Addbutton>
                         <Savebutton fit = {fit}></Savebutton>

@@ -2,30 +2,33 @@
 "use client";
 
 import { fitContext } from '@/context/fitCardContext';
+import { Workout } from '@/components/type';
 import { CalendarPlus } from 'lucide-react';
 import React, { useContext } from 'react';
 import { toast } from 'react-toastify';
 
-const Addbutton = ({ fit }) => {
+interface AddbuttonProps {
+    fit: Workout;
+}
 
-    const { addFit, setAddFit } = useContext(fitContext);
+const Addbutton = ({ fit }: AddbuttonProps) => {
+
+    const context = useContext(fitContext);
+    if (!context) return null;
+    const { addFit, setAddFit } = context;
 
     const handleAdd = () => {
-
         if (!fit) {
             toast.error("Workout data not found!");
             return;
         }
-
         if (addFit.some((item) => item.id === fit.id)) {
             toast.info("Already saved!");
             return;
         }
-
-        setAddFit((prev: unknown) => [...prev, fit]);
-
+        setAddFit((prev) => [...prev, fit]);
         toast.success(`You have saved "${fit.name}"`);
-    }
+    };
 
     return (
         <button
