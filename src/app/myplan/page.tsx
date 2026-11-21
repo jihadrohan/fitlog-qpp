@@ -3,6 +3,7 @@
 
 import React, { useContext, useMemo, useState } from "react";
 import { fitContext } from "@/context/fitCardContext";
+import { Workout } from "@/components/type";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -16,64 +17,91 @@ import {
 
 const Myplan = () => {
 
-    const { addFit, setAddFit, saveFit, setSaveFit } = useContext(fitContext);
+    const context = useContext(fitContext);
 
-    const [activeTab, setActiveTab] = useState("today");
-    const [sortBy, setSortBy] = useState("duration");
+    const addFit: Workout[] = context?.addFit ?? [];
+    const saveFit: Workout[] = context?.saveFit ?? [];
+
+    const [activeTab, setActiveTab] = useState<"today" | "saved">("today");
+    const [sortBy, setSortBy] = useState<"duration" | "calories" | "rating" | "name">("duration");
     const [completed, setCompleted] = useState<string[]>([]);
-    const [visibleCount, setVisibleCount] = useState(5);
+    const [visibleCount, setVisibleCount] = useState<number>(5);
 
     const currentList = activeTab === "today" ? addFit : saveFit;
 
     const totalExercises = addFit.length;
+
     const totalMinutes = addFit.reduce(
-        (total: number, item: { duration: unknown; }) => total + Number(item.duration), 0
+        (total, item) => total + Number(item.duration), 0
     );
+
     const totalCalories = addFit.reduce(
-        (total: number, item: { caloriesBurned: unknown; }) => total + Number(item.caloriesBurned), 0
+        (total, item) => total + Number(item.caloriesBurned), 0
     );
 
     const sortedList = useMemo(() => {
         return [...currentList].sort((a, b) => {
+
             if (sortBy === "duration") {
                 return Number(a.duration) - Number(b.duration);
             }
+
             if (sortBy === "calories") {
                 return Number(a.caloriesBurned) - Number(b.caloriesBurned);
             }
+
             if (sortBy === "rating") {
                 return Number(b.rating) - Number(a.rating);
             }
+
             return a.name.localeCompare(b.name);
+
         });
     }, [currentList, sortBy]);
 
     const visibleList = sortedList.slice(0, visibleCount);
 
     const handleRemove = (id: string | number) => {
+
         if (activeTab === "today") {
-            setAddFit(addFit.filter((item: { id: string | number; }) => item.id !== id));
+
+            context?.setAddFit(
+                addFit.filter(item => item.id !== id)
+            );
+
             setCompleted(completed.filter(item => item !== String(id)));
+
         } else {
-            setSaveFit(saveFit.filter((item: { id: string | number; }) => item.id !== id));
+
+            context?.setSaveFit(
+                saveFit.filter(item => item.id !== id)
+            );
+
         }
     };
 
     const handleComplete = (id: string | number) => {
+
         setCompleted(prev =>
             prev.includes(String(id))
                 ? prev.filter(item => item !== String(id))
                 : [...prev, String(id)]
         );
+
     };
 
     const allVisibleCompleted =
         visibleList.length > 0 &&
         visibleList.every(item => completed.includes(String(item.id)));
 
+    if (!context) {
+        return <div>Context not found</div>;
+    }
+
     return (
         <div className="min-h-screen bg-[#101114] text-white px-5 md:px-8 py-10">
             <div className="max-w-7xl mx-auto">
+
                 <div className="mb-7">
                     <h1 className="text-3xl font-extrabold uppercase">
                         MY PLAN
@@ -123,19 +151,19 @@ const Myplan = () => {
                             onClick={() => setActiveTab("today")}
                             className={`px-5 py-2 rounded-lg text-xs transition ${
                                 activeTab === "today"
-                                ? "bg-[#242832] text-white font-bold"
-                                : "text-gray-400 hover:text-white"
+                                    ? "bg-[#242832] text-white font-bold"
+                                    : "text-gray-400 hover:text-white"
                             }`}
                         >
-                            Today's Plan
+                            Todays Plan
                         </button>
 
                         <button
                             onClick={() => setActiveTab("saved")}
                             className={`px-5 py-2 rounded-lg text-xs transition ${
                                 activeTab === "saved"
-                                ? "bg-[#242832] text-white font-bold"
-                                : "text-gray-400 hover:text-white"
+                                    ? "bg-[#242832] text-white font-bold"
+                                    : "text-gray-400 hover:text-white"
                             }`}
                         >
                             Saved
@@ -150,7 +178,7 @@ const Myplan = () => {
 
                         <select
                             value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value)}
+                            onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
                             className="bg-[#15171e] border border-[#292d36] rounded-xl px-3 py-2 text-xs outline-none"
                         >
                             <option value="duration">Duration</option>
@@ -161,6 +189,7 @@ const Myplan = () => {
                     </div>
 
                 </div>
+
                 <div className="space-y-4">
 
                     {visibleList.length > 0 ? (
@@ -182,6 +211,7 @@ const Myplan = () => {
                                     />
 
                                 </div>
+
                                 <div className="flex-1 min-w-0">
 
                                     <h2 className="text-base font-extrabold uppercase">
@@ -218,6 +248,7 @@ const Myplan = () => {
                                     )}
 
                                 </div>
+
                                 <div className="flex flex-wrap items-center gap-3">
 
                                     <Link
@@ -233,8 +264,8 @@ const Myplan = () => {
                                             onClick={() => handleComplete(fit.id)}
                                             className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold transition ${
                                                 completed.includes(String(fit.id))
-                                                ? "bg-[#292d36] text-lime-400"
-                                                : "bg-lime-400 hover:bg-lime-300 text-black"
+                                                    ? "bg-[#292d36] text-lime-400"
+                                                    : "bg-lime-400 hover:bg-lime-300 text-black"
                                             }`}
                                         >
                                             <Check size={15} />
@@ -242,6 +273,7 @@ const Myplan = () => {
                                                 ? "Completed"
                                                 : "Mark as Done"}
                                         </button>
+
                                     )}
 
                                     <button
@@ -251,8 +283,11 @@ const Myplan = () => {
                                     >
                                         <X size={19} />
                                     </button>
+
                                 </div>
+
                             </div>
+
                         ))
 
                     ) : (
@@ -283,7 +318,8 @@ const Myplan = () => {
                     )}
 
                 </div>
-               {activeTab === "today" &&
+
+                {activeTab === "today" &&
                     allVisibleCompleted &&
                     sortedList.length > visibleCount && (
 
@@ -295,11 +331,12 @@ const Myplan = () => {
                         >
                             Load More Workouts
                         </button>
+
                     </div>
+
                 )}
 
             </div>
-
         </div>
     );
 };
